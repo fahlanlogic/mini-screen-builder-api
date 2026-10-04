@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Screen {
+  id               String            @id @default(uuid())
+  width            Int
+  height           Int
+  elements         Json              @default("[]") // draft
+  publishedVersion Int               @default(0)    // versi publish terakhir
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  published        PublishedScreen[]
+}
+
+model PublishedScreen {
+  id        String   @id @default(uuid())
+  screenId  String
+  screen    Screen   @relation(fields: [screenId], references: [id], onDelete: Cascade)
+  version   Int
+  width     Int
+  height    Int
+  elements  Json
+  createdAt DateTime @default(now())
+
+  @@unique([screenId, version])
+}
